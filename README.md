@@ -88,5 +88,39 @@ Genelde ölçeklendirme yöntemi olarak **scale-out** kullanılır. Uygulama far
   Sistemin bütünsel açıdan sağlığını kontrol edebilmek için her servisin izlenebilir olması gerekmektedir.  
   Haliyle gerekli log ve traceability yaklaşımlarıyla servislerin sağlığı ve performans durumları sürekli olarak izlenebilir.
 
+---
 
+## Mİkroservis'lerin Mantığı Nedir
+
+- Büyük ve karmaşık uygulamaların daha küçük ve yönetilebilir parçalara a yrılmasını sağlayarak, yazılım geliştirme süreçlerini ve uygulamanın ölçeklendirilmesini kolaylaştırmaktır. 
+
+---
+
+## Mikroservis Mimarsinin Avantajı
+
+- Mikroservis mimarisi, bir uygulamayı bağımsız, küçük ve özelleştirilmiş servislere böldüğü için modüler bir yapı sunmaktadır. Bu modülerlik, farklı servislerin ayrı ekipler tarafından geliştirilebilmesini ve sadece ihtiyacı olan hizmetlerin güncellenebilmesini sağlar. Lakin bu durum monolitik mimaride öyle değildir! Tek bir ekip tarafından komple bir uygulama geliştirilir ve ekipteki bir kişiden uygulamanın tüm noktasına hakimiyet beklenir.
+- Mikroservisler yapacakları işe göre farklı teknolojiler ve diller kullanarak geliştirilebilirler. Dolayısıyla geliştiricilere uzmanlık alanına göre odaklanma şansı verir. Monolitik mimaride ise bu uygulama tek bir teknolojiye odaklıdır.
+- Mikroservis yaklaşımıyla geliştirilen uygulama gevşek bağlılıkla bütünlük arz eder. Böylece uygulama sürecinde olası bir etki sistemin genelini etkilemeyecektir. Lakin monolitik uygulamada ise sistemin modülleri birbirlerine sıkı bağımlı olacağı için sistemin herhangi bir noktasındaki hata yahut kesinti komple uygulamayı etkileyecek ve bir kriz ortamı oluşturacaktır.
+- Her bir mikroservis diğerinden bağımsız olarak ölçeklenebilirken, monolitik yaklaşımda ise uygulama bir bütün olarak ölçeklendirilmek zorundadır. Bu durumda kaynakların kullanımı açısından büyük bir fark yaratmaktadır.
+- Mikroservis yaklaşımında, servislerin kendi süreçlerine ve altyapısına göre hususi dağıtım planlaması gerçekleştirilebilir. Monolitik yaklaşımda ise sistem her açıdan bütünlük arz edeceği için en ufak bir değişiklikte bile topyekün deploy durumu söz konusudur.
+
+## Mikroservis Mimarisinin Dezavantajı
+
+- Mikroservis mimarisi, geleneksel monolitik mimariye göre daha fazla karmaşıklık sergilemektedir. Servisler çoğaldıkça iletişim ve koordinasyon yönetimi zorlaşacaktır. Monolitik mimaride ise tüm uygulama tek bir yapıda bütünlük arz edeceğinden dolayı geliştirilmesi ve yönetilmesi daha basittir.
+- Mikroservis'ler bir takım operasyonel zorluklar getirebilir. Halbuki monolitik mimari tüm kodun tek bir yerde bulunması sayesinde geliştirme ve bakım süreçlerinde oldukça kolaylık sağlar.
+- Mikroservisler'de servisler arası iletişim süreçleri ister istemez performansı etkileyecektir, monolotikte ise bütünselliğin getirdiği atomik durumun iletişim hızı kat be kat daha fazla olacaktır.
+- Mikroservislerde her bir servisin kendine ait veritabanı olması veri tutarlılığı açısından kritik arz etmektedir, veri senkronizasyonu konuusnda servisler arası tutarsızlık söz konusu olabilirken monolitik bir mimaride tek bir veritabanı üzerinden çalışıldığında veri tutarsızlığı yaşanmayacaktır.
+
+## Hangi Senaryolarda Mikroservis Mimarisi Tercih Edilmelidir
+
+- Mikroservis mimarisi, büyük ve karmaşık uygulama süreçlerinde ihtiyacını daha çok hissettirecektir. Misal olarak, e-ticaret sisteminde ödeme modülünün kesintisiz ve ölçeklenebilir olma ihtiyacı ancak mikroservis yaklaşımıyla çözüm bulacaktır. Başka bir örnekte, kullanıcı verilerini listelerken kullanıcıyı bekletmemek adına istek geldikten sonra ilgili servise yönlenip sürecin aksamaması sağlanacaktır.
+- Teknoloji çeşitliliği ihtiyacı olan durumlarda, uygulamanın ihtiyacı olduğu operasyonlarda farklı teknolojiler yahut diller kullanarak çözüm getirilmesi gerekiyorsa eğer mikroservis mimarisi gerekir. Örnek olarak yüz taraması işlemini yapan teknoloji mevcut kullanılan teknolojiden ayrı olabilir.
+
+## Hangi Senaryolarda Mikroservis Mimarisi Tercih Edilmemelidir
+
+- Küçük ve basit uygulamalarda, gereksiz karmaşık ve maliyetli olabilir. Bu tür uygulamalarda, monolitik mimari daha basit ve uygun olacaktır.
+- Teknoloji ve altyapı yetersizliği durumlarda, yeterli kaynak altyapı yoksa mikroservis mimarisi uygun olmayabilir.
+- Hızlı geliştirme ve prototipleme durumlarında, hızlı bir şekilde geliştirme gerekiyorsa mikroservis mimarisi yavaşlatacaktır.
+- Farklı sorumluluk bağlamları barındırmayan uygulamalarda, mikroservis mimarisi uygun değildir. 
+Özetle, monolitik mimaride yeterliliğini gözlemledikten sonra ihtiyaç durumunda mikroservis mimariye geçilmelidir.
 
