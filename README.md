@@ -111,6 +111,8 @@ Genelde ölçeklendirme yöntemi olarak **scale-out** kullanılır. Uygulama far
 - Mikroservisler'de servisler arası iletişim süreçleri ister istemez performansı etkileyecektir, monolotikte ise bütünselliğin getirdiği atomik durumun iletişim hızı kat be kat daha fazla olacaktır.
 - Mikroservislerde her bir servisin kendine ait veritabanı olması veri tutarlılığı açısından kritik arz etmektedir, veri senkronizasyonu konuusnda servisler arası tutarsızlık söz konusu olabilirken monolitik bir mimaride tek bir veritabanı üzerinden çalışıldığında veri tutarsızlığı yaşanmayacaktır.
 
+---
+
 ## Hangi Senaryolarda Mikroservis Mimarisi Tercih Edilmelidir
 
 - Mikroservis mimarisi, büyük ve karmaşık uygulama süreçlerinde ihtiyacını daha çok hissettirecektir. Misal olarak, e-ticaret sisteminde ödeme modülünün kesintisiz ve ölçeklenebilir olma ihtiyacı ancak mikroservis yaklaşımıyla çözüm bulacaktır. Başka bir örnekte, kullanıcı verilerini listelerken kullanıcıyı bekletmemek adına istek geldikten sonra ilgili servise yönlenip sürecin aksamaması sağlanacaktır.
@@ -122,5 +124,29 @@ Genelde ölçeklendirme yöntemi olarak **scale-out** kullanılır. Uygulama far
 - Teknoloji ve altyapı yetersizliği durumlarda, yeterli kaynak altyapı yoksa mikroservis mimarisi uygun olmayabilir.
 - Hızlı geliştirme ve prototipleme durumlarında, hızlı bir şekilde geliştirme gerekiyorsa mikroservis mimarisi yavaşlatacaktır.
 - Farklı sorumluluk bağlamları barındırmayan uygulamalarda, mikroservis mimarisi uygun değildir. 
-Özetle, monolitik mimaride yeterliliğini gözlemledikten sonra ihtiyaç durumunda mikroservis mimariye geçilmelidir.
+- Özetle, monolitik mimaride yeterliliğini gözlemledikten sonra ihtiyaç durumunda mikroservis mimariye geçilmelidir.
+
+---
+
+## Mikroservis Mimarisi Temel Kavramlar
+
+- **Servis:** Mikroservis mimarisinin temel yapıtaşıdır. Bağımsız işlevselliğe sahip, küçük ve sadece belirli bir işe odaklanmış uygulamanın bileşenleridir. Her servis, kendine özgü bir veritabanına, iş mantığına ve endpoint'e sahiptir.
+- **İşlev:** Her servisin, spesifik bir şekilde meydana getirdiği operasyonun işin ta kendisidir. Misal olarak; kullanıcı yönteminden sorumlu olan bir servisin kullanıcı yetkilendirmeyle ilgili desteği o servisin bir işlevidir.
+- **Bağımsızlık:** Her bir servis, birbirinden bağımsız ve kendi içersinide tutarlılık sağlayan bileşenlerdir. Bir servisin çökmesi veya güncellenmesi, diğer servisleri etkilemez.Bu şekilde uygulama parçalara bölündüğü için geliştirme, dağıtım ve bakım süreçleri oldukça kolay ve yönetilebilir olacaktır.
+- **API:** Servis'lerin birbirleriyle yahut dış dünyayla iletişim kurmasını sağlayan arayüzlerdir. Genellikle senkron iletişim modellemesinde tercih edilir.
+- **Message Broker:** Servis'lerin birbirleriyle iletişim kurmasını sağlayan kuyruk sistemidir. Genellikle asenkron iletişim modellemesinde tercih edilir.
+- **Ölçeklenebilirlik:** Her bir servis, ihtiyaç ve işlem hacmine göre diğerlerinden ayrı olarak ölçeklendirilebilir.
+- **Yeniden Kullanılabilirlik:** Mikroservis'ler işlevsel açıdan bağımsız ve tek bir işe odaklanmış yapılar olduğu için ihtiyaç doğrultusunda diğer projelerde yahut farklı platformlar da yeniden kullanılabilirler.
+
+--- 
+
+## Mikroservis Organizasyon Modelleri
+
+- **Teknoloji Odaklı Model:** Bu modelde, her bir servis farklı bir teknoloji yığını ve dilinde geliştirilir. Örneğin bir servis Java ile yazılırken diğeri Go ile yazılabilir. Bu yaklaşım, geliştiricilere teknoloji seçiminde özgürlük sağlar ve her servisin belirli bir teknoloji yığınından en iyi şekilde yararlanmasına izin verir. Ancak, farklı teknolojilerin desteklenmesi ekiplerin çoklu teknolojilere hakim olması gereği gibi zorlukları da beraberinde getirmektedir.
+- **İş Odaklı Model:** Bu modelde, her servis belirli bir iş fonksiyonunu temsil eder. Örneğin, kullancıı yönetimi ödeme işlemleri gibi farklı işlevler için ayrı servsler oluşturulabilir. Bu yaklaşımda ekiplerin sorumlulukarının net bir şekilde tanımlanmasını sağlar. Ancak iş odaklı modelde, farklı işlevlere sahip olan servisler arasındaki veri paylaşımının tasarlanması ve yönetimi biraz zahmetli olabilir.
+- **Veri Odaklı Model:** Bu modelde ise her bir servsini belirli bir veri yahut veri grubu üzerinde yoğunlaştığı görülmektedir. Örneğin, müşteri verilerini yöneten bir servis, ürün kataloğunu yöneten bir servis gibi. Bu yaklaşım, servisler arasındaki veri bütünlüğünü ve veri işleme performasını artırabilir. Ancak veri odaklı modelde, her veri tüm servislerin ilgileneceği yapı olabileceğinden dolayı bu yaklaşımda servisler arası sınırlar net çizilemeyebilir ve doğal olarak servisler arasındaki bağımlılığı arttırabilir ve veri güncellemelerinin koordinasyonu zorlaştırabilir.
+- **Karışık Model:** Bu modelde, farklı yaklaşımların bir kombinsyonu kullanılmaktadır. Örneğin, iş odaklı bir ana yapı üzerine, farklı teknolojilere sahip alt servisler eklenerek projelerin tasarımı genişletilebilir. Böylece organizasyon ve uygulama ihtiyaçlarıyla birlikte uygulanabilirliğe bağlı olarak çeşitli mikroservis yaklaşımlarını bir araya getiren esnek bir yaklaşım sağlanmış olur.
+
+
+
 
