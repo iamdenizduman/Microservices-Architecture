@@ -147,6 +147,26 @@ Genelde ölçeklendirme yöntemi olarak **scale-out** kullanılır. Uygulama far
 - **Veri Odaklı Model:** Bu modelde ise her bir servsini belirli bir veri yahut veri grubu üzerinde yoğunlaştığı görülmektedir. Örneğin, müşteri verilerini yöneten bir servis, ürün kataloğunu yöneten bir servis gibi. Bu yaklaşım, servisler arasındaki veri bütünlüğünü ve veri işleme performasını artırabilir. Ancak veri odaklı modelde, her veri tüm servislerin ilgileneceği yapı olabileceğinden dolayı bu yaklaşımda servisler arası sınırlar net çizilemeyebilir ve doğal olarak servisler arasındaki bağımlılığı arttırabilir ve veri güncellemelerinin koordinasyonu zorlaştırabilir.
 - **Karışık Model:** Bu modelde, farklı yaklaşımların bir kombinsyonu kullanılmaktadır. Örneğin, iş odaklı bir ana yapı üzerine, farklı teknolojilere sahip alt servisler eklenerek projelerin tasarımı genişletilebilir. Böylece organizasyon ve uygulama ihtiyaçlarıyla birlikte uygulanabilirliğe bağlı olarak çeşitli mikroservis yaklaşımlarını bir araya getiren esnek bir yaklaşım sağlanmış olur.
 
+---
+
+## Mikroservis'lerde Servisler Arası İletişim (Veri İletişim) Nasıl Gerçekleştirilir?
+
+- **HTTP Tabanlı API'lar:** En yaygın olarak kullanılan yöntemlerden birisidir. HTTP protokolü üzerinden REST API'ları kullanarak yapılan iletişim modelidir. Bu yöntem, servislerin HTTP talepleri aracılığıyla birbirleriyle etkileşime girmesine olanak tanımaktadır. Client, bir servise HTTP talebi gönderir ve servis de HTTP yanıtı ile cevap verir. Bu cevap client tarafından bekleneceği için genellikle senkron iletişim modellerinde tercih edilen yöntemdir. Veri paylaşımını JSON veya XML gibi veri formatlarıyla sağlar.
+- **Message Broker:** Servisler message broker yapıları aracılığıyla asenkron bir şekilde birbirleriyle iletişim kurabilirler. Bu modelde, herhangi bir servis message broker'a bir mesaj bırakır ve hedef servis bu mesajı uygun zamanda alır ve işler. Kuyrukyaki mesajların sorumlu servis tarafından opsiyonel bir şekilde işlenmesi  ve bu işlemin client tarafından beklenmemesi asenkron iletişim modellerinde tercih edilmesine sebep olur. Böylece servisler arasında gevşek bağlılık sağlanmış olur ve arttırılmış bağımsızlık ile birlikte yüksek ölçeklenebilirlik sağlanabilir.
+- **RPC(Remote Procedure Call):** Bu yöntemde, bir servis farklo bir sunucudaki serviste bulunan herhangi bir metodu veya metotları sanki kendi ortamının birer parçasıymış gibi çağırabilmektedir. Haliyle servisler arası doğrudan bir bağlantı gerektiren bu yöntem, bağımlılığı arttırabilir. Bu nedenle dikkatli kullanılmaldır.
+
+---
+
+## Mikroservis'lerde Servisler Arası Veri İletişiminde API Gateway'in Görevi Nedir?
+
+- Servisler ile client arasında köprü görevi görür.
+- Mikroservis mimarisinde geliştirme süresini kısaltacak ve uygulamaları merkezi bir nokta üzerinden haberleştirecek şekilde odaklayacak mühim bir rol üstlenen bileşendir.
+- Client'in yapacağı istek süreçlerinde hedef servisin yahut servislerin konumunu/ipsini/adresini bilmesine gerek kalmaksızın, tek bir merkezi nokta üzerinden isteklerin doğru servise yönlendirilmesini sağlamaktadır.
+- Ayrıca sistemde kurguların merkezi API yapılanması sayesinde gereklik kimlik doğrulama ve yetkilendirme sorumululuklarını da üstlenerek servislerin de güvenliği sağlayabilmektedir. Bu sayede gelen tüm trafiği merkezi bir şekilde denetleyerek uygulama bütünü için gerekli güvenlik protokollerinin yönetilmesini merkezileştirebilir.
+- Tüm bunların dışında, ölçeklendirilmiş servisler üzerinde gelen trafiği dengeli bir şekilde yönlendirerek yük dağılımını (load balancing) optimize edebilir.
+- API sürüm yönetimi ve caching gibi süreçlerde de desteklerde bulunabilir.
+- Özetle, mikroservis mimarisinde elzem olmasa da oldukça önemli bir bileşendir. Uygulama karmaşıklığı arttıkça ve servis client sayıları arttıkça önemi hissedilmektedir.
+
 
 
 
