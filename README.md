@@ -104,6 +104,8 @@ Genelde ölçeklendirme yöntemi olarak **scale-out** kullanılır. Uygulama far
 - Her bir mikroservis diğerinden bağımsız olarak ölçeklenebilirken, monolitik yaklaşımda ise uygulama bir bütün olarak ölçeklendirilmek zorundadır. Bu durumda kaynakların kullanımı açısından büyük bir fark yaratmaktadır.
 - Mikroservis yaklaşımında, servislerin kendi süreçlerine ve altyapısına göre hususi dağıtım planlaması gerçekleştirilebilir. Monolitik yaklaşımda ise sistem her açıdan bütünlük arz edeceği için en ufak bir değişiklikte bile topyekün deploy durumu söz konusudur.
 
+---
+
 ## Mikroservis Mimarisinin Dezavantajı
 
 - Mikroservis mimarisi, geleneksel monolitik mimariye göre daha fazla karmaşıklık sergilemektedir. Servisler çoğaldıkça iletişim ve koordinasyon yönetimi zorlaşacaktır. Monolitik mimaride ise tüm uygulama tek bir yapıda bütünlük arz edeceğinden dolayı geliştirilmesi ve yönetilmesi daha basittir.
@@ -117,6 +119,8 @@ Genelde ölçeklendirme yöntemi olarak **scale-out** kullanılır. Uygulama far
 
 - Mikroservis mimarisi, büyük ve karmaşık uygulama süreçlerinde ihtiyacını daha çok hissettirecektir. Misal olarak, e-ticaret sisteminde ödeme modülünün kesintisiz ve ölçeklenebilir olma ihtiyacı ancak mikroservis yaklaşımıyla çözüm bulacaktır. Başka bir örnekte, kullanıcı verilerini listelerken kullanıcıyı bekletmemek adına istek geldikten sonra ilgili servise yönlenip sürecin aksamaması sağlanacaktır.
 - Teknoloji çeşitliliği ihtiyacı olan durumlarda, uygulamanın ihtiyacı olduğu operasyonlarda farklı teknolojiler yahut diller kullanarak çözüm getirilmesi gerekiyorsa eğer mikroservis mimarisi gerekir. Örnek olarak yüz taraması işlemini yapan teknoloji mevcut kullanılan teknolojiden ayrı olabilir.
+
+---
 
 ## Hangi Senaryolarda Mikroservis Mimarisi Tercih Edilmemelidir
 
@@ -168,5 +172,100 @@ Genelde ölçeklendirme yöntemi olarak **scale-out** kullanılır. Uygulama far
 - Özetle, mikroservis mimarisinde elzem olmasa da oldukça önemli bir bileşendir. Uygulama karmaşıklığı arttıkça ve servis client sayıları arttıkça önemi hissedilmektedir.
 
 
+---
+
+## Bir Mikroservis Mimarisinin Tasarımı Nasıl Gerçekleştirilir?
+
+- **Gereksinimleri Anlamak:** Her şeyden önce ilk adım olarak projenin gereksinimlerinin net bir şekilde anlaşılması gerekmektedir. Gereksinimler, projenin özelliklerinin fonksiyonlarının ve performans hedeflerinin belirlenmesini içermektedir. Ekip üyeleri, proje sahipleri ve kullanıcılarla etkileşimde bulunmak ve gereksinimlerin doğru bir şekilde anlaşıldığından emin olmak önemlidir.
+- **Mirkoservislerin Belirlenmesi:** Gereksinimler belirlendikten sonra uygulamanın işlevlerinin birbirlerinden ayırıp özerk servislere bölmek gerekmektedir.
+- **İletişim Protokollerinin Belirlenmesi:** Mikroservis mimarisinde servislerin sınırlarının belirlenmesinden sonra en önemli konulardan birisi de servisler arası iletişim ve veri paylaşım protokolleridir. Servisler arası veri alışverişi için, o anki senaryonun yapısın, yani iletişim modeline uygun olan, senkron ya da asenkron davranış sergilenebilecek protokoler belirlenmelidir.
+- **Veritabanı Stratejisi:** İletişim protokollerinin yanında ayrıca her bir servisin veritabanı stratejisi dikkate alınmalı ve senaryosuna göre en doğru model tasarlanmalıdır.
+- **Güvenlik Tasarımı:** Mikroservis mimarisinin en önemli kanatlarından birisi de güvenlik yapılanmasıdır. Sistemin geneli için authentication, authorization, veri güvenliği ve ağ güvenliği gibi konular göz önünde bulundurulmalı ve özellikle her bir servisin yetkisiz erişmden korunması için gerekli kritikler yapılarak teknoloji altyapı kurgulanmalıdır.
+- **Hata Yönetimi ve İzleme:** Bir mikroservis mimarisi birbirinden bağımsız birçok bileşen ve servisin meydana gelmesiyle bütünlük arz ettiğinden bu bütünün her bir noktasından haberdar olmalı ve olası hatalara yahut kesintilere karşın dinamik bir izlenebilirlik sağlanmalıdır. Böylece sistemin parçalarından meydana gelen hataları son kullanıcılara karşı yönetilebilir kılmalı ve biryandan da onarılabilirlik açısından hız kazandıracak özellikler tasarlanmalıdır. Bunun için gerekli araçlar ve loglama stratejileri düşünülmeldiri.
+- **Ölçeklenebilirlik ve Yedekleme:** Tasarlanan mimarinin nihahi olarak son kullanıcıya sunulması sürecinde olası talep artışları hesaba  katılmalı ve gerekli ölçeklendirme ve yedekleme senaryoları kurgulanmalıdır.
+- **Test ve Sürüm Yönetimi:** Uygulamanın bütünü açısından kümülatif olmakla beraber her bir servisinde tek tek test edilebileceği senaryolar hazırlanmalıdır.
+- **Dokümantasyon**: Son olarak tasarlanan mikroservis mimarisi ve bileşenleriyle ilgili, hem mevcut ekibin hem de gelecekteki ekip üyelerinin sitemi anlamalarına ve geliştirmelerine yardımcı olacak kapsamlı ve güncel dokümantasyon sağlanmaya özen gösterilmelidir.
+
+---
+
+## Mikroservis Mimarisinde Bir Servisin Sınırları Nasıl Belirlenir?
+
+- **Tek Sorumluluk Prensibi:** Her servis yalnızca belirli bir işlevselliği veya sorumluluğu yerine getirmelidir. Böylece servislerin sınırlarını sorumlulukları üzerinden ayırt edebiliriz.
+- **Dış Dünya Etkileşimi:** Servisin sınırlarını belirlerken, servisin dış dünya ile nasıl etkileşime geçeceğinin belirlenmesi işimizi kolaylaştıracaktır. Misal olarak; gelen veriyi asenkron işleyecekse bir servis o verinin üretiminden sorumlu olmayacak ve böylece sınırına dair ipucu vermiş olacaktır.
+- **Ekip ve Organizasyon Yapısı:** Organizasyon yapısı servisin sınırlarına dair ipuçları verebilir. Bir ekibin niteliği ve almış oldukları sorumluluk geliştirecekleri servisin sınırlılıklarıyla paralellik arz edebilir.
+- **Bağımlılıklar ve Sınırlar:** Yapılacak bir işin farklı bir işe olan bağımlılığı servisler arasındaki sınırları çizmenizde yardımcı olabilir.
+- **Veri Yapısı ve Sınırı:** İşlenecek olan verinin yapısı ve sınırı, o veriyi işleyecek olan servisin sınırları ile doğru orantılı olabilir.
+
+--- 
+
+ ## Bir Servisin İş Gereksinimleri Analizi Nasıl Gerçekleştirilir?
+
+- **Gereksinimleri Anlama:** İlk adım olarak, müşteri proje sahibi veya ilgili paydaşlarla etkileşime geçilmeli servis hakkındaki beklentileri,işlevselliği, performansı ve diğer gereksinimleri anlamak için açık sorular sorulmalı ve cevaplar dinlenmelidir.
+- **Hedef Kitleyi Belirleme:** Servisin hangi kullanıcılar veya paydaşlar için tasarlandığı ve ne tür bir değer sağlaması gerektiği belirlenmedilir.
+- **Kapsam Belirleme:** Servisin kapsamı belirlenmelidir. Yani servisin neleri yapacağı ve neleri yapmayacağı belirlenmelidir.
+- **Temel İşlevselliği Tanımlama:** Servisin hangi işlemleri gerçekleştireceği veri ve bilgileri nasıl işleyeceği ve sonuçlarını nasıl sunacağı belirlenmelidir.
+- **Performans Gereksinimleri:** Servisin performans hedefleri belirlenmeli, hız yanıt süresi işlem kapasitesi vs. gibi performans ölçüleri tanımlanmaldır.
+- **Güvenlik Gereksinimleri:** Servisin kimlik doğrulama yetkilendirme veri güvenliği vs gibi güvenlik önlemleri gereksinimleri belirlenmeli.
+- **Entegrasyon Gereksinimleri:** Servisin diğer servislerle nasıl entegre olacağı belirlenmelidir.
+- **Veri ve Veritabanı Gereksinimleri:** Servis için kullanıalcak veri türleri ve bu veri türlerine uygun veritabanı sistemi seçilmeli ve veri erişimi,depolama vs gibi işlemlerin nasıl kurgulanacağı düşünülmelidir.
+- **Hata Yönetimi ve İzleme:** Serviste olası hatalar meydana geldiği takdirde bunların nasıl yönetileceği ve tracebility için gerekli önlemler kurgulanmalı.
+- **Belgelendirme:** Servisin tüm gelişim sürecinde ekip üyeleri ve paydaşlar arasında net bir anlayış oluşturmak ve servisin geliştirilme açısından sürdürülebilirliğini sağlamak için kapsamlı belgelendirme hazırlanmalıdır.
+
+---
+
+## Mikroservislerde Veritabanı Stratejileri Nelerdir?
+
+- **Her Mikroservis Kendi Veritabanına Sahip Olabilir:** Her servisin kendine ait veritabanı olmasııdr. Bu strateji, mikroservislerin bağımsızlığını en üst düzeye çıkarmaktadır ve bir mikroservis veritabanındaki değişikliklerin diğerini etkilemesini önlemektedir. Bu stratejinin dezavantajları, kimi verilerin farklı veritabanlarında tekrarlanması yahut veri tutarsızlıklarının meydana gelmesi gibi sorunlar olabilmektedir.
+- **Ortak Veritabanı Kullanımı:** Tüm mikroservisler, ortak bir veritabanını kullanmakta verileri paylaşabilirler. Bu strateji veri bütünlüğünü sağlamak ve veri tekrarı sorunlarını önlemek için avantajlı olabilir. Ancak bu stratejide servisler arasında sıkı bir bağlantıya neden olabilmekte ve değişiklik süreçlerinde diğer servislere direkt etkide bulunabilmektedir.
+- **Veri Servisi:** Mikroservisler, verileri paylaşmak ve yönetmek için ayrı bir veri servisi kullanabilirler. Bu stratejide, verilerin merkezi olarak yönetilmesini sağlar ve mikroservislerin kendi veritabanlarını tutmalarını önleyerek veri tekrarı sorununu azaltabilirler. Ancak bu yaklaşımda da ekstra karmaşıklık ve performans sorunları söz konusu olabilir.
+- **Event Sourcing:** EventSourcing verilerin meydana geldiği olaylar aracılığıyla kaydedildiği bir veri modelidir ve mikroservisler'de veri bütünlüğünün sağlanması ve veri tekrarı sorunlarının azaltılması için kullanılabilir.
+- **CQRS:** CQRS veritabanı işlemlerini query ve command olarak ikiye ayıran bir tasarım desenidir. Mikroservisler, veri değişiklikleri için command tarafını kullanabilir ve verileri okuma ve sorgulamak için ise query tarafını kullanabilirler. Böylece veri yazma ve okuma işlemlerini ayırarak performans ve ölçeklenebilirlik avantajları sağlayabilirler.
+
+---
+
+## Mikroservisler Kendi Aralarında Nasıl Veri Paylaşabilirler?
+
+- **API Request:** İki servis HTTP protokolü veya RPC gibi protokoller üzerinden API çağrıları yaparak veri paylaşabilirler. Bir servis, diğer bir servisin sunduğu API'ları çağırarak belirli verilere erişebilir.
+- **Event Driven Architecture:** Olay tabanlı mimari davranışı eşliğinde birbirleriyle veri paylaşımı yapabilirler. Message Broker aracılığı ile.
+- **Ortak Veri Depolama:** Bazı durumlarda farklı mikroservislerin aynı veriye ihtiyacı olabilir ve bu durumda veriyi ortak bir veritabanında depolamak mantıklı olabilir.
+- **API Gateway:** Tüm servislerin API'lerine merkezi bir erişim noktası sağlayan bir bileşendir. Bu sayede, istemciler sadece API Gateway'e istek gönderir ve gateway'de ilgili servislere bu istekleri yönlendirir.
 
 
+---
+
+## Mikroservisler Kendi Aralarında Senkronizasyonu Nasıl Sağlarlar?
+
+- Saga Pattern, Outbox Pattern, Inbox Pattern, 2PC Two-Phase commit
+
+
+--- 
+
+## Servisler Arası Senkron ve Asenkron İletişim Modelleri Nelerdir?
+
+- Mikroservis mimarisinde, servisler arası iletişim modelleri teknik olarak senkron ve asenkron olarak değerlendirilmektedir. Bu modeller, servisler arasındaki iletişim senaryosu ve iş kuralı gereği mantıken tercih edilerek, uygulanmaktadırlar.
+
+- **Senkron İletişim:** Bir servisin, diğer bir servisle doğrudan etkileşimde bulunduğu bir iletişim modelidir. Request atan servis attığı servisten response bekler. Request'i gönderen servis, response gelinceye kadar bekler ve geldiği taktirde de işlemini tamamlar. Bu modelde senkron denmesinin sebebi de budur. Bir servis, diğer bir servisten yanıt almadığı sürece bir sonraki adıma geçmeyecek bekleyecektir. Yani bir senkronizasyon süreci söz konusudur. Avantajları: Senkron iletişim modeli kolay anlaşılabilir, haliyle iki servis arasındaki iletişim sürecini rahatlıkla takip edebilir ve bütünsel davranış olarak genel topolojiyi rahatlıkla çıkarabilirsiniz. Hataların izlenmesi ve hata ayıklama süreci de oldukça kolaydır. Dezavantajları: Senkron iletişimin en büyük dezavantajı servislerin birbirlerine olan bağımlılığını arttırmasıdır. Bu bağımlılıktan dolayı uygulamanın ölçeklenebilirliği olumsuz etkilenebilir. Ayrıca gelen istekleri karşılayan servisin cevap verme süresine bağlı olarak tüm işlemlerin yavaşlamasına yol açabilir.
+
+- **Asenkron İletişim:** Bir servis diğerine beklemeksizin mesaj gönderebilir ve işlemi tamamlamasını beklemeden diğer işlemlerine geçebilir. Böylece işlemler paralel olarak gerçekleştirilebilir ve bir servis, diğer servis(ler)in cevaplarını almaksızın çalışmasına devam edebilir. Avantajları: Servisler arası bağımlılığı azaltır ve böylece ölçeklenebilirliği arttırır. Servislerin, diğer servislerden yanıt beklemeksizin diğer işlemlerine devam etmesi söz konusu olacağı için her bir servis açısından işlem süreleri daha hızlı olacaktır. Message broker'a atılan mesajların işlenmesi sürecinde olası hatalara karşı ilgili mesajların daha sonra da işlenebilmesi özelliğinden dolayı daha yüksek hata toleransı sunmaktadır. Dezavantajları: Asenkron iletişim modelinde message broker yönetimi vs. gerekeceğinden dolayı karmaşıklığı artabilir. Mesajların sırası ve zamanlamasıyla ilgili sorunlar ortaya çıkabilir ve uygulama tasarımında bu durumları göz önünde bulundurup gerekli önlemlerin alınması gerekmektedir.
+
+- **Özetle;** Uygulamanın ihtiyaçlarına ve gereksinimlerine bağlı olarak doğru iletişim modeli seçilmelidir.
+ 
+- **Senkron İletişim Örneği:** Bir eticaret uygulamasında sepet ve stok işlemlerinin ayrı mikroservislerde işlendiğini varsayalım. Eğer ki müşteri sepette bir ürünü eklendiğinde sepet servisi doğrudan stok servisi çağırarak ilgili ürüne dair stoğun güncellenmesini talep ediyor ve bu talep neticesini bekliyorsa, ve stok servisi de bu talebe karşılık işlemi tamamlayarak cevap döndürüyorsa bu senkron bir iletişim senaryosudur.
+- **Asenkron İletişim Örneği:** Bir bülten uygulamasında, e-posrta süreçlernin farklı bir servisle yürütüldüğünü düşünelim. Eğer ki gönderilecek e-posta isteği bir kuyruğa eklenip ardından da e-posta işleminden sorumlu olan servisin bu kuyrutkan mesajları alarak gönderme işlemi gerçekleştiriliyorsa bu bir asenkron iletişim senaryosudur. Böylece onlarca kullancıya bülten uygulamasını yormaksızın ve son kullanıcıları bekletmeksizin rahatça(asenkron bir şekilde) e-posta gönderilebilir.
+- **Karma İletişim Örneği:** Bir e-ticaret uygulamasında sepet, sipariş, stok ve teslimat işlemlernin ayrı servislerde yürütüldüğünü düşünelim. Müşteri bir sipariş verdiğinde, sepet servisi siparişi doğrulayarak sto kservisini direkt senkron bir şekilde çağırabilir ve stok güncellemesi sağlandıktan sonra sipariş tamamlanabilir. Ancak siparişin teslimatı ise asenkron bir şekilde yürütülebilir ve bu siparişe dair bilgi bir message broker'a atılarak teslimattan sorumlu servis tarafından asenkron bir şekilde asenrkon işlenerek sonucun kargo şirketinin yanıtına bağlı olarak işlenmesi sağlanabilir.
+- **Senkron İletişim Örneği:** Banka sistemlerinde müşterilerin kendi aralarındaki transfer süreci senkron iletiim modeline örnek bir senaryodur. X müşteri tarafından Y müşterisine dair yapılan para transfer talebi, transfer işleminden sorumlu mikroservise gönderilir ve gerekli hesap ve bakiye kontrolleri neticesinde transfer ya gerçekleştirilir ya da tutarsızlıktan dolayı iptal edilir. Her iki durumda da işlem sonucu response olarak kullanıcıya döndürülür.
+- **Asenkron İletişim Örneği:** İstatistik yahut analiz gibi uygulamardaki rapor oluşturma süreçleri de asenkron iletişim modeline örnek senaryo teşkil edebilmektedir. Kullanıcı rapor talebinde bulunduğu zaman bu istek bir mesaj kuyruğuna gönderilir ve rapor işlemlerinden sorumlu serviste bu kuyruktan mesajı alarak raporu işleme başlar ve tamamlandığı zaman mail ya da arayüz üzerinden kullanıcıya bilgi verebilir.
+- **Asenkron İletişim Örneği:** Uygulamalardaki notification sistemlerinde asenkron iletişim modeline bir örnektir. Kuıllanıcı arayüz üzerinden bildirim talebinde bulunarak bu bildirimi mesaj kuyruğuna ekler. Notification'dan sorumlu bir servis ise kuyruktan mesajı alır ve mesajda bildirilen alıcılara gerekli bildirim çalışmasını gerçekleştirir.
+- **Asenkron İletişim Örneği:** Dosya işlemleri de genellikle asenkron iletişim modelinde yürütülürler. Özellikle büyük dosyalar yüklenmek istendiğinde mesaj kuyruğuna gerekli bilgilere sahip olan mesaj atılır, bu işten sorumlu olan serviste mesajı işleyerek dosyanın işlenmesini asenkron bir şekilde gerçekleştirir.
+
+---
+
+## Senkron ve Asenkron İletişim Süreçlerinde Hangi Yöntemler Kullanılır?
+
+- Http Restful API, SOAP, Http gRPC gibi yöntemler ile senkron iletişim sağlanır.
+- Message broker ile de asenkron iletişim sağlanır.
+
+
+
+
+ 
